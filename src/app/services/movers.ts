@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export interface MoverRow {
   code: string;
@@ -15,7 +16,7 @@ export interface MoverRow {
 })
 export class Movers {
 
-  private baseUrl = 'http://localhost:8080/api/viewer/reports';
+private baseUrl = `${environment.apiUrl}/viewer/reports`;
 
   constructor(private http: HttpClient) {}
 

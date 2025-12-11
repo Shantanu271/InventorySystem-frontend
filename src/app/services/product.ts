@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export interface ProductDto {
   id: number;
@@ -23,10 +24,8 @@ export interface ProductDto {
 })
 export class ProductService {
   // Used by cashier / POS APIs
-  private readonly baseUrl = 'http://localhost:8080/api/products';
-
-  // Used by admin dashboard product management APIs
-  private readonly adminBaseUrl = 'http://localhost:8080/api/admin/products';
+private readonly adminBaseUrl = `${environment.apiUrl}/admin/products`;
+private readonly baseUrl = `${environment.apiUrl}/products`;
 
 
 

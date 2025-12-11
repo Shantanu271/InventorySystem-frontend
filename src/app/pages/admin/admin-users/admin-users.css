@@ -38,10 +38,17 @@ td.num {
   text-align: right;
 }
 
-/* ------------------------------- */
-/* STATUS PILL                     */
-/* ------------------------------- */
+.btn-primary{
 
+    background: #151a3e;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
 .status-pill {
   padding: 2px 10px;
   border-radius: 999px;

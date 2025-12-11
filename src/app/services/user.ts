@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export type UserRole = 'ADMIN' | 'CASHIER' | 'VIEWER';
 
@@ -17,7 +18,7 @@ export interface UserDto {
   providedIn: 'root',
 })
 export class UserService {
-  private readonly adminBaseUrl = 'http://localhost:8080/api/admin/users';
+   private readonly adminBaseUrl = `${environment.apiUrl}/admin/users`;
 
   constructor(private http: HttpClient) {}
 

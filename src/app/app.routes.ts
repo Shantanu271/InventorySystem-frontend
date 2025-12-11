@@ -2,14 +2,11 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
 
-  // ===================================
-  // DEFAULT
-  // ===================================
+
+  
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // ===================================
-  // LOGIN PAGE
-  // ===================================
+
   {
     path: 'login',
     loadComponent: () =>
@@ -138,7 +135,7 @@ export const routes: Routes = [
       },
 
       // ===========================
-      // ADMIN REPORTS FIXED ROUTES
+      // ADMIN REPORTS
       // ===========================
       {
         path: 'reports',

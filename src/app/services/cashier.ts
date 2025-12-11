@@ -130,7 +130,7 @@ export class CashierService {
     }
   }
 
-  /** Return all cached invoices (for InvoicePage list) */
+ 
   getCachedInvoices(): SaleResponse[] {
     return this.invoiceCache;
   }
@@ -140,7 +140,7 @@ export class CashierService {
     return this.invoiceCache.find(i => i.billNumber === billNumber);
   }
 
-  // ----------------- Hold Bills -----------------
+
 
   createHoldBill(req: HoldBillRequest): Observable<HoldBillSummary> {
     // new hold bill banega, to purana cache invalid

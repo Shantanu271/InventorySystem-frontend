@@ -16,6 +16,7 @@ export class AdminProducts implements OnInit {
   rows: ProductDto[] = [];
   loading = false;
 
+  // inline editing
   editingRowId: number | null = null;
   editModel: Partial<ProductDto> | null = null;
 
@@ -24,27 +25,25 @@ export class AdminProducts implements OnInit {
   constructor(
     private productService: ProductService,
     private router: Router,
-    private cdr: ChangeDetectorRef,   // 🔥 FIX 1: Added
-    private zone: NgZone              // 🔥 FIX 2: Added
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts(); // 🔥 load instantly
+    this.loadProducts();
   }
 
-  // 🔥 FIX — FORCE UI REFRESH on page load
+  // Load products
   loadProducts(): void {
     this.loading = true;
-    this.cdr.detectChanges(); // instant UI refresh
+    this.cdr.detectChanges();
 
     this.productService.getAllForAdmin().subscribe({
       next: (data: ProductDto[]) => {
-        this.zone.run(() => { // make sure Angular updates UI
-
+        this.zone.run(() => {
           this.rows = data;
           this.loading = false;
-
-          this.cdr.detectChanges(); // 🔥 instant table load
+          this.cdr.detectChanges();
         });
       },
       error: (err: any) => {
@@ -55,6 +54,7 @@ export class AdminProducts implements OnInit {
     });
   }
 
+  // Filter search
   get filteredRows(): ProductDto[] {
     const q = this.searchText.toLowerCase().trim();
     if (!q) return this.rows;
@@ -75,7 +75,7 @@ export class AdminProducts implements OnInit {
     console.log('Bulk Import clicked');
   }
 
-  // Activate / Disable toggle
+  // Activate / Deactivate
   onToggleStatus(row: ProductDto): void {
     this.productService.toggleActiveForAdmin(row.id).subscribe({
       next: (updated: ProductDto) => {
@@ -84,7 +84,7 @@ export class AdminProducts implements OnInit {
           if (index !== -1) {
             this.rows[index] = updated;
           }
-          this.cdr.detectChanges(); // 🔥 UI updates instantly
+          this.cdr.detectChanges();
         });
       },
       error: (err) => {
@@ -93,13 +93,18 @@ export class AdminProducts implements OnInit {
     });
   }
 
+  // Start Editing Row
   onEdit(row: ProductDto): void {
     this.editingRowId = row.id;
-    this.editModel = { ...row };
+
+    // deep copy to avoid UI auto-update
+    this.editModel = JSON.parse(JSON.stringify(row));
+
     this.savedForRow = false;
     this.cdr.detectChanges();
   }
 
+  // Cancel editing
   onCancelEdit(): void {
     this.editingRowId = null;
     this.editModel = null;
@@ -107,8 +112,16 @@ export class AdminProducts implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Save Changes (Inline)
   onSaveEdit(): void {
     if (!this.editingRowId || !this.editModel) return;
+
+    // convert numbers (Angular inputs return string)
+    if (this.editModel.mrp !== undefined)
+      this.editModel.mrp = Number(this.editModel.mrp);
+
+    if (this.editModel.sellingPrice !== undefined)
+      this.editModel.sellingPrice = Number(this.editModel.sellingPrice);
 
     this.productService.updateForAdmin(this.editingRowId, this.editModel).subscribe({
       next: (updated: ProductDto) => {
@@ -126,7 +139,7 @@ export class AdminProducts implements OnInit {
             this.editModel = null;
             this.savedForRow = false;
             this.cdr.detectChanges();
-          }, 1000);
+          }, 700);
         });
       },
       error: (err) => {

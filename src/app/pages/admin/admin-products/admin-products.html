@@ -15,11 +15,7 @@
 <div class="filters-row">
   <div class="filter">
     <label>Search</label>
-    <input
-      type="text"
-      [(ngModel)]="searchText"
-      placeholder="Code / name / category"
-    />
+    <input type="text" [(ngModel)]="searchText" placeholder="Code / name / category" />
   </div>
 
   <div class="info-chip">
@@ -44,45 +40,87 @@
 
       <tbody>
         @if (filteredRows.length === 0) {
-          <tr>
-            <td colspan="7" class="empty-state">
-              No products found. Use "Add Product" to create new items.
-            </td>
-          </tr>
+        <tr>
+          <td colspan="7" class="empty-state">
+            No products found. Use "Add Product" to create new items.
+          </td>
+        </tr>
         } @else {
 
-          @for (row of filteredRows; track row.id) {
-            <tr>
+        @for (row of filteredRows; track row.id) {
+        <tr [class.editing]="editingRowId === row.id">
 
-              <td data-label="Code">{{ row.skuCode }}</td>
+          <!-- CODE -->
+          <td data-label="Code">
+            @if (editingRowId === row.id && editModel) {
+            <input type="text" [(ngModel)]="editModel.skuCode" />
+            } @else {
+            {{ row.skuCode }}
+            }
+          </td>
 
-              <td data-label="Product">{{ row.name }}</td>
 
-              <td data-label="Category">{{ row.category }}</td>
+          <!-- PRODUCT NAME -->
+          <td data-label="Product">
+            @if (editingRowId === row.id && editModel) {
+            <input type="text" [(ngModel)]="editModel.name" />
+            } @else {
+            {{ row.name }}
+            }
+          </td>
 
-              <td data-label="MRP" class="num">{{ row.mrp | number : '1.0-2' }}</td>
 
-              <td data-label="Selling" class="num">{{ row.sellingPrice | number : '1.0-2' }}</td>
+          <!-- CATEGORY -->
+          <td data-label="Category">
+            @if (editingRowId === row.id && editModel) {
+            <input type="text" [(ngModel)]="editModel.category" />
+            } @else {
+            {{ row.category }}
+            }
+          </td>
 
-              <td data-label="Status">
-                <span
-                  class="status-pill"
-                  [class.active]="row.active"
-                  [class.inactive]="!row.active"
-                >
-                  {{ row.active ? 'ACTIVE' : 'INACTIVE' }}
-                </span>
-              </td>
 
-              <td class="num">
-                <button class="link-btn" (click)="onEdit(row)">Edit</button>
-                <button class="link-btn" (click)="onToggleStatus(row)">
-                  {{ row.active ? 'Deactivate' : 'Activate' }}
-                </button>
-              </td>
+          <!-- MRP -->
+          <td data-label="MRP" class="num">
+            @if (editingRowId === row.id && editModel) {
+            <input type="number" [(ngModel)]="editModel.mrp" />
+            } @else {
+            {{ row.mrp | number : '1.0-2' }}
+            }
+          </td>
 
-            </tr>
-          }
+
+          <td data-label="Selling" class="num">
+            @if (editingRowId === row.id && editModel) {
+            <input type="number" [(ngModel)]="editModel.sellingPrice" />
+            } @else {
+            {{ row.sellingPrice | number : '1.0-2' }}
+            }
+          </td>
+
+
+          <!-- STATUS -->
+          <td data-label="Status">
+            <span class="status-pill" [class.active]="row.active" [class.inactive]="!row.active">
+              {{ row.active ? 'ACTIVE' : 'INACTIVE' }}
+            </span>
+          </td>
+
+          <!-- ACTIONS -->
+          <td class="num">
+            @if (editingRowId === row.id) {
+            <button class="save-btn" (click)="onSaveEdit()">Save</button>
+            <button class="cancel-btn" (click)="onCancelEdit()">Cancel</button>
+            } @else {
+            <button class="link-btn" (click)="onEdit(row)">Edit</button>
+            <button class="link-btn" (click)="onToggleStatus(row)">
+              {{ row.active ? 'Deactivate' : 'Activate' }}
+            </button>
+            }
+          </td>
+
+        </tr>
+        }
         }
       </tbody>
     </table>

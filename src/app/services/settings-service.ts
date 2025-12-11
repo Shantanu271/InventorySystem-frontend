@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export interface StoreSettings {
   shopName: string;
@@ -16,7 +17,8 @@ export interface StoreSettings {
   providedIn: 'root',
 })
 export class SettingsService {
-  private baseUrl = 'http://localhost:8080/api/admin/settings';
+  private baseUrl = `${environment.apiUrl}/admin/settings`;
+
 
   constructor(private http: HttpClient) {}
 

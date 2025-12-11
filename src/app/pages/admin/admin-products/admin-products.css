@@ -1,6 +1,4 @@
-/* ------------------------------- */
-/* PRODUCTS PAGE BASE STYLING     */
-/* ------------------------------- */
+
 
 .section-header {
   display: flex;
@@ -153,6 +151,26 @@ td.num {
   color: #9ca3af;
   padding: 1rem;
 }
+
+.save-btn{
+
+   border: none;
+  background: transparent;
+  color: #1c82f6;
+  font-size: 0.78rem;
+  cursor: pointer;
+  margin-left: 0.3rem;
+}
+
+.cancel-btn{
+   border: none;
+  background: transparent;
+  color: #1c82f6;
+  font-size: 0.78rem;
+  cursor: pointer;
+  margin-left: 0.3rem;
+}
+
 
 /* ------------------------------- */
 /* RESPONSIVE BREAKPOINTS          */
