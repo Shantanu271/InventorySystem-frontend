@@ -16,7 +16,7 @@ export interface StoreSettings {
   providedIn: 'root',
 })
 export class SettingsService {
-  private baseUrl = 'http://localhost:8080/api/admin/settings';
+  private baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/admin/settings';
 
   constructor(private http: HttpClient) {}
 
