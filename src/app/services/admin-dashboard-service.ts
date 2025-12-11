@@ -15,7 +15,7 @@ export interface AdminOverviewMetrics {
 })
 export class AdminDashboardService {
   // adjust if your backend base URL is different
-  private baseUrl = 'http://localhost:8080/api/admin/dashboard';
+  private baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/admin/dashboard';
 
   constructor(private http: HttpClient) {}
 
