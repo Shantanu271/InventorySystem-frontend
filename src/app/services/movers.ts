@@ -15,7 +15,7 @@ export interface MoverRow {
 })
 export class Movers {
 
-  private baseUrl = 'http://localhost:8080/api/viewer/reports';
+  private baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/viewer/reports';
 
   constructor(private http: HttpClient) {}
 
