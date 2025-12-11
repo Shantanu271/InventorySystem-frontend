@@ -23,11 +23,10 @@ export interface ProductDto {
 })
 export class ProductService {
   // Used by cashier / POS APIs
-  private readonly baseUrl = 'http://localhost:8080/api/products';
+  private readonly baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/products';
 
   // Used by admin dashboard product management APIs
-  private readonly adminBaseUrl = 'http://localhost:8080/api/admin/products';
-
+  private readonly adminBaseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/admin/products';
 
 
   constructor(private http: HttpClient) {}
