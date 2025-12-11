@@ -77,7 +77,8 @@ export interface HoldBillDetail {
   providedIn: 'root',
 })
 export class CashierService {
-  private readonly baseUrl = 'http://localhost:8080/api/cashier';
+  private readonly baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/cashier';
+
 
   // 🔥 SIMPLE CACHE FOR HELD BILLS
   private heldBillsCache: HoldBillSummary[] | null = null;
