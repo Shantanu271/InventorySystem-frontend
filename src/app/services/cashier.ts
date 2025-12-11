@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment.development';
 
 export interface CartItemRequest {
   productId: number;
@@ -77,7 +78,7 @@ export interface HoldBillDetail {
   providedIn: 'root',
 })
 export class CashierService {
-  private readonly baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/cashier';
+  private readonly baseUrl = `${environment.apiUrl}/cashier`;
 
 
   // 🔥 SIMPLE CACHE FOR HELD BILLS

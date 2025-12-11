@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export interface AdminOverviewMetrics {
   totalProducts: number;
@@ -15,7 +16,7 @@ export interface AdminOverviewMetrics {
 })
 export class AdminDashboardService {
   // adjust if your backend base URL is different
-  private baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/admin/dashboard';
+  private baseUrl = `${environment.apiUrl}/admin/dashboard`;
 
   constructor(private http: HttpClient) {}
 
