@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export interface MonthlyRow {
   month: string;
@@ -13,7 +14,8 @@ export interface MonthlyRow {
   providedIn: 'root'
 })
 export class MonthlySales{
-  private baseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/viewer/reports';
+ private baseUrl = `${environment.apiUrl}/viewer/reports`;
+
 
   constructor(private http: HttpClient) {}
 
