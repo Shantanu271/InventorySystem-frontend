@@ -10,7 +10,7 @@ export class DailySalesService {
   constructor(private http: HttpClient) {}
 
  getDailySales(date: string) {
-  return this.http.get(`http://localhost:8080/api/sales/daily`, {
+  return this.http.get(`https://inventorysystem-backend-de9k.onrender.com/api/sales/daily`, {
     params: { date },
     responseType: 'text'
   });
