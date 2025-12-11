@@ -17,7 +17,7 @@ export interface UserDto {
   providedIn: 'root',
 })
 export class UserService {
-  private readonly adminBaseUrl = 'http://localhost:8080/api/admin/users';
+  private readonly adminBaseUrl = 'https://inventorysystem-backend-de9k.onrender.com/api/admin/users';
 
   constructor(private http: HttpClient) {}
 
