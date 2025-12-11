@@ -13,8 +13,7 @@ export interface ProductReportRow {
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
-  private api = "http://localhost:8080/api/reports";
-
+  private api = "https://inventorysystem-backend-de9k.onrender.com/api/reports";
   constructor(private http: HttpClient) {}
 
   getProductHistory(): Observable<ProductReportRow[]> {
