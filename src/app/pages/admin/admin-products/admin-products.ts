@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProductDto, ProductService } from '../../../services/product';
+import { LiquorInventory, LiquorInventoryService } from '../../../services/liquor-inventory-service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -12,141 +18,75 @@ import { Router } from '@angular/router';
   styleUrl: './admin-products.css',
 })
 export class AdminProducts implements OnInit {
-  searchText = '';
-  rows: ProductDto[] = [];
+
+  liquorRows: LiquorInventory[] = [];
   loading = false;
 
-  // inline editing
-  editingRowId: number | null = null;
-  editModel: Partial<ProductDto> | null = null;
-
-  savedForRow = false;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   constructor(
-    private productService: ProductService,
-    private router: Router,
+    private liquorService: LiquorInventoryService,
     private cdr: ChangeDetectorRef,
-    private zone: NgZone
+    private router: Router,  
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+    console.log('[AdminProducts] ngOnInit');
+    this.loadLiquorInventory();
   }
 
-  // Load products
-  loadProducts(): void {
+  loadLiquorInventory(): void {
+    console.log('[AdminProducts] loadLiquorInventory() called');
     this.loading = true;
-    this.cdr.detectChanges();
 
-    this.productService.getAllForAdmin().subscribe({
-      next: (data: ProductDto[]) => {
-        this.zone.run(() => {
-          this.rows = data;
-          this.loading = false;
-          this.cdr.detectChanges();
-        });
-      },
-      error: (err: any) => {
-        console.error('Failed to load products', err);
+    this.liquorService.getAll().subscribe({
+      next: (data) => {
+        console.log('[AdminProducts] Liquor inventory loaded:', data);
+        this.liquorRows = data;
         this.loading = false;
         this.cdr.detectChanges();
       },
+      error: (err) => {
+        console.error('[AdminProducts] Failed to load liquor inventory:', err);
+        this.loading = false;
+      }
     });
   }
-
-  // Filter search
-  get filteredRows(): ProductDto[] {
-    const q = this.searchText.toLowerCase().trim();
-    if (!q) return this.rows;
-
-    return this.rows.filter(
-      (p) =>
-        p.skuCode.toLowerCase().includes(q) ||
-        p.name.toLowerCase().includes(q) ||
-        (p.category ?? '').toLowerCase().includes(q)
-    );
-  }
-
-  onAddProduct(): void {
-    this.router.navigate(['/admin/products/new']);
+    onAddNewProduct(): void {
+ this.router.navigate(['/admin/products/new']);
   }
 
   onBulkImport(): void {
-    console.log('Bulk Import clicked');
+    console.log('[AdminProducts] Bulk Import button clicked');
+    this.fileInput.nativeElement.click();
   }
 
-  // Activate / Deactivate
-  onToggleStatus(row: ProductDto): void {
-    this.productService.toggleActiveForAdmin(row.id).subscribe({
-      next: (updated: ProductDto) => {
-        this.zone.run(() => {
-          const index = this.rows.findIndex((p) => p.id === updated.id);
-          if (index !== -1) {
-            this.rows[index] = updated;
-          }
-          this.cdr.detectChanges();
-        });
+  onFileSelected(event: any): void {
+    console.log('[AdminProducts] File input change event:', event);
+
+    const file = event.target?.files?.[0];
+    if (!file) {
+      console.warn('[AdminProducts] No file selected');
+      return;
+    }
+
+    console.log('[AdminProducts] Selected file:', {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+
+    this.liquorService.bulkImport(file).subscribe({
+      next: (res) => {
+        console.log('[AdminProducts] Bulk import success response:', res);
+        alert('Liquor inventory imported successfully');
+        this.loadLiquorInventory(); // refresh
       },
       error: (err) => {
-        console.error('Failed to toggle product active flag', err);
-      },
+        console.error('[AdminProducts] Bulk import failed:', err);
+        alert(err?.error || 'Bulk import failed – check console');
+      }
     });
-  }
-
-  // Start Editing Row
-  onEdit(row: ProductDto): void {
-    this.editingRowId = row.id;
-
-    // deep copy to avoid UI auto-update
-    this.editModel = JSON.parse(JSON.stringify(row));
-
-    this.savedForRow = false;
-    this.cdr.detectChanges();
-  }
-
-  // Cancel editing
-  onCancelEdit(): void {
-    this.editingRowId = null;
-    this.editModel = null;
-    this.savedForRow = false;
-    this.cdr.detectChanges();
-  }
-
-  // Save Changes (Inline)
-  onSaveEdit(): void {
-    if (!this.editingRowId || !this.editModel) return;
-
-    // convert numbers (Angular inputs return string)
-    if (this.editModel.mrp !== undefined)
-      this.editModel.mrp = Number(this.editModel.mrp);
-
-    if (this.editModel.sellingPrice !== undefined)
-      this.editModel.sellingPrice = Number(this.editModel.sellingPrice);
-
-    this.productService.updateForAdmin(this.editingRowId, this.editModel).subscribe({
-      next: (updated: ProductDto) => {
-        this.zone.run(() => {
-          const index = this.rows.findIndex((p) => p.id === updated.id);
-          if (index !== -1) {
-            this.rows[index] = updated;
-          }
-
-          this.savedForRow = true;
-          this.cdr.detectChanges();
-
-          setTimeout(() => {
-            this.editingRowId = null;
-            this.editModel = null;
-            this.savedForRow = false;
-            this.cdr.detectChanges();
-          }, 700);
-        });
-      },
-      error: (err) => {
-        console.error('Failed to save edited product', err);
-        this.savedForRow = false;
-        this.cdr.detectChanges();
-      },
-    });
+    
   }
 }

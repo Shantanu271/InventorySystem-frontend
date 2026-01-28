@@ -1,25 +1,31 @@
 <div class="section-header">
   <div>
-    <h2>Products & Catalog</h2>
+    <h2>Liquor Inventory</h2>
     <p class="section-desc">
-      Add, edit and bulk import products with barcode, price and category.
+      Bulk import and view liquor inventory from Excel.
     </p>
   </div>
 
   <div class="actions">
     <button class="btn-light" (click)="onBulkImport()">Bulk Import</button>
-    <button class="btn-primary" (click)="onAddProduct()">+ Add Product</button>
   </div>
+      <button class="btn-primary" (click)="onAddNewProduct()">
+      + Add New Product
+    </button>
 </div>
 
-<div class="filters-row">
-  <div class="filter">
-    <label>Search</label>
-    <input type="text" [(ngModel)]="searchText" placeholder="Code / name / category" />
-  </div>
+<!-- Hidden File Input -->
+<input
+  type="file"
+  #fileInput
+  accept=".xlsx"
+  hidden
+  (change)="onFileSelected($event)"
+/>
 
+<div class="filters-row">
   <div class="info-chip">
-    Products in list: <strong>{{ filteredRows.length }}</strong>
+    Total Records: <strong>{{ liquorRows.length }}</strong>
   </div>
 </div>
 
@@ -28,99 +34,37 @@
     <table>
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Product</th>
-          <th>Category</th>
-          <th class="num">MRP</th>
-          <th class="num">Selling</th>
-          <th>Status</th>
-          <th class="num">Actions</th>
+          <th>Brand</th>
+          <th>Strength (%)</th>
+          <th>Bottle Size (ml)</th>
+          <th>MRP</th>
+          <th>Cases</th>
+          <th>Total Bottles</th>
+          <th>Batch</th>
+          <th>Month</th>
         </tr>
       </thead>
 
       <tbody>
-        @if (filteredRows.length === 0) {
-        <tr>
-          <td colspan="7" class="empty-state">
-            No products found. Use "Add Product" to create new items.
-          </td>
-        </tr>
+        @if (liquorRows.length === 0) {
+          <tr>
+            <td colspan="8" class="empty-state">
+              No liquor inventory found. Import Excel to add data.
+            </td>
+          </tr>
         } @else {
-
-        @for (row of filteredRows; track row.id) {
-        <tr [class.editing]="editingRowId === row.id">
-
-          <!-- CODE -->
-          <td data-label="Code">
-            @if (editingRowId === row.id && editModel) {
-            <input type="text" [(ngModel)]="editModel.skuCode" />
-            } @else {
-            {{ row.skuCode }}
-            }
-          </td>
-
-
-          <!-- PRODUCT NAME -->
-          <td data-label="Product">
-            @if (editingRowId === row.id && editModel) {
-            <input type="text" [(ngModel)]="editModel.name" />
-            } @else {
-            {{ row.name }}
-            }
-          </td>
-
-
-          <!-- CATEGORY -->
-          <td data-label="Category">
-            @if (editingRowId === row.id && editModel) {
-            <input type="text" [(ngModel)]="editModel.category" />
-            } @else {
-            {{ row.category }}
-            }
-          </td>
-
-
-          <!-- MRP -->
-          <td data-label="MRP" class="num">
-            @if (editingRowId === row.id && editModel) {
-            <input type="number" [(ngModel)]="editModel.mrp" />
-            } @else {
-            {{ row.mrp | number : '1.0-2' }}
-            }
-          </td>
-
-
-          <td data-label="Selling" class="num">
-            @if (editingRowId === row.id && editModel) {
-            <input type="number" [(ngModel)]="editModel.sellingPrice" />
-            } @else {
-            {{ row.sellingPrice | number : '1.0-2' }}
-            }
-          </td>
-
-
-          <!-- STATUS -->
-          <td data-label="Status">
-            <span class="status-pill" [class.active]="row.active" [class.inactive]="!row.active">
-              {{ row.active ? 'ACTIVE' : 'INACTIVE' }}
-            </span>
-          </td>
-
-          <!-- ACTIONS -->
-          <td class="num">
-            @if (editingRowId === row.id) {
-            <button class="save-btn" (click)="onSaveEdit()">Save</button>
-            <button class="cancel-btn" (click)="onCancelEdit()">Cancel</button>
-            } @else {
-            <button class="link-btn" (click)="onEdit(row)">Edit</button>
-            <button class="link-btn" (click)="onToggleStatus(row)">
-              {{ row.active ? 'Deactivate' : 'Activate' }}
-            </button>
-            }
-          </td>
-
-        </tr>
-        }
+          @for (row of liquorRows; track row.id) {
+            <tr>
+              <td>{{ row.brandName }}</td>
+              <td>{{ row.strengthVv }}</td>
+              <td>{{ row.bottleSizeMl }}</td>
+              <td>{{ row.mrpApproved }}</td>
+              <td>{{ row.noOfCases }}</td>
+              <td>{{ row.totalBottles }}</td>
+              <td>{{ row.batchNumber }}</td>
+              <td>{{ row.monthOfMfg }}</td>
+            </tr>
+          }
         }
       </tbody>
     </table>
