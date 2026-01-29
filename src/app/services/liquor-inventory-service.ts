@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment.development';
 
 export interface LiquorInventory {
   id: number;
+  skuCode: string;
   brandName: string;
   strengthVv: number;
   bottleSizeMl: number;

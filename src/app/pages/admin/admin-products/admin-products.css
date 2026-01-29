@@ -134,6 +134,7 @@ td.num {
 
 /* Column widths (header + body SAME) */
 .brand { width: 17%; }
+.sku-code { width: 10%; }
 .strength { width: 9%; }
 .size { width: 11%; }
 .mrp { width: 7%; }

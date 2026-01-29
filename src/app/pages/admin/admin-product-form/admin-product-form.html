@@ -68,6 +68,16 @@
             [autofocus]="mode === 'MANUAL'"
           />
         </div>
+        <div class="field">
+          <label>SKU Code *</label>
+          <input
+            type="text"
+            [(ngModel)]="form.skuCode"
+            name="skuCode"
+            required
+            placeholder="SKU-23562"
+          />
+        </div>
 
         <div class="field">
           <label>Barcode</label>

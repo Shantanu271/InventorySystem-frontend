@@ -22,6 +22,7 @@ export class AdminProductForm {
   infoMessage = '';
 
   form: any = {
+     skuCode: '',   
     brandName: '',
     barcode: '',
     strengthVv: 0,
@@ -56,6 +57,10 @@ export class AdminProductForm {
     }
 
     this.form.barcode = code;
+      // 🔥 optional auto SKU
+    if (!this.form.skuCode) {
+      this.form.skuCode = 'SKU-' + code.slice(-6);
+    }
     this.infoMessage = 'Barcode captured successfully.';
     this.cdr.detectChanges();
   }
@@ -71,11 +76,12 @@ export class AdminProductForm {
     this.errorMessage = '';
     this.infoMessage = '';
 
-    if (!this.form.brandName || !this.form.barcode) {
-      this.errorMessage = 'Brand name and barcode are required.';
-      this.cdr.detectChanges();
-      return;
-    }
+   if (!this.form.skuCode || !this.form.brandName || !this.form.barcode) {
+  this.errorMessage = 'SKU Code, Brand name and Barcode are required.';
+  this.cdr.detectChanges();
+  return;
+}
+
 
     const payload = {
       ...this.form,
