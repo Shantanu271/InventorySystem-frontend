@@ -42,7 +42,11 @@ export class AdminProducts implements OnInit {
     this.liquorService.getAll().subscribe({
       next: (data) => {
         console.log('[AdminProducts] Liquor inventory loaded:', data);
-        this.liquorRows = data;
+          this.liquorRows = data.sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() -
+      new Date(a.createdAt).getTime()
+  )
         this.loading = false;
         this.cdr.detectChanges();
       },

@@ -14,6 +14,8 @@ export interface LiquorInventory {
   totalBottles: number;
   batchNumber: string;
   monthOfMfg: string;
+  barcode: string;
+  createdAt: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,13 +26,19 @@ export class LiquorInventoryService {
 
   constructor(private http: HttpClient) {}
 
+  //  GET ALL
   getAll(): Observable<LiquorInventory[]> {
     return this.http.get<LiquorInventory[]>(`${this.baseUrl}/all`);
   }
-
+  //  BULK IMPORT
   bulkImport(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post(`${this.baseUrl}/bulk-import`, formData);
+  }
+
+  //  ADD SINGLE PRODUCT
+  addProduct(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/add`, payload);
   }
 }

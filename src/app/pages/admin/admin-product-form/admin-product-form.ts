@@ -1,12 +1,8 @@
-// src/app/pages/admin/admin-product-form/admin-product-form.ts
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  ProductDto,
-  ProductService,
-} from '../../../services/product';
+import { LiquorInventoryService } from '../../../services/liquor-inventory-service';
 
 type Mode = 'SCAN' | 'MANUAL';
 
@@ -20,30 +16,26 @@ type Mode = 'SCAN' | 'MANUAL';
 export class AdminProductForm {
   mode: Mode = 'SCAN';
 
-  // value coming from wireless scanner
   scanBarcode = '';
-
-  // form model for new product
-  form: Partial<ProductDto> = {
-    skuCode: '',
-    barcode: '',
-    name: '',
-    category: '',
-    unitOfMeasure: '',
-    mrp: 0,
-    sellingPrice: 0,
-    minStockLevel: 0,
-      currentStock: 0,  
-    active: true,
-  };
-
   saving = false;
   errorMessage = '';
   infoMessage = '';
 
+  form: any = {
+    brandName: '',
+    barcode: '',
+    strengthVv: 0,
+    bottleSizeMl: 0,
+    mrpApproved: 0,
+    noOfCases: 0,
+    noOfBottles: 0,
+    batchNumber: '',
+    monthOfMfg: '',
+  };
+
   constructor(
-    private productService: ProductService,
-    public router: Router,
+    private liquorService: LiquorInventoryService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -51,66 +43,57 @@ export class AdminProductForm {
     this.mode = mode;
     this.errorMessage = '';
     this.infoMessage = '';
-
-    // 🔥 force UI refresh when switching SCAN / MANUAL
     this.cdr.detectChanges();
   }
 
-  /**
-   * Called when user scans and presses Enter or clicks button.
-   * NO API CALL – just copy scanned value into form.barcode.
-   */
   onScanConfirm(): void {
-    this.errorMessage = '';
-    this.infoMessage = '';
-
     const code = this.scanBarcode.trim();
+
     if (!code) {
-      this.errorMessage = 'Please scan or type a barcode first.';
+      this.errorMessage = 'Please scan a barcode.';
       this.cdr.detectChanges();
       return;
     }
 
-    // put scanned barcode into form
     this.form.barcode = code;
-    this.infoMessage =
-      'Barcode captured. Fill other details and save the product.';
-
-    // 🔥 reflect barcode + message immediately
+    this.infoMessage = 'Barcode captured successfully.';
     this.cdr.detectChanges();
+  }
+
+  // ✅ frontend-only calculation
+  get totalBottles(): number {
+    const cases = Number(this.form.noOfCases) || 0;
+    const bottlesPerCase = Number(this.form.noOfBottles) || 0;
+    return cases * bottlesPerCase;
   }
 
   onSubmit(): void {
     this.errorMessage = '';
     this.infoMessage = '';
 
-    if (!this.form.skuCode || !this.form.name) {
-      this.errorMessage = 'SKU Code and Name are required.';
+    if (!this.form.brandName || !this.form.barcode) {
+      this.errorMessage = 'Brand name and barcode are required.';
       this.cdr.detectChanges();
       return;
     }
 
-    this.saving = true;
-    this.cdr.detectChanges(); // show "Saving..." instantly
+    const payload = {
+      ...this.form,
+      totalBottles: this.totalBottles,
+    };
 
-    this.productService.createForAdmin(this.form).subscribe({
+    this.saving = true;
+    this.cdr.detectChanges();
+
+    this.liquorService.addProduct(payload).subscribe({
       next: () => {
         this.saving = false;
-        this.infoMessage = 'Product created successfully.';
-
-        // 🔥 update UI once more before navigation
-        this.cdr.detectChanges();
-
-        // go back to products list
         this.router.navigate(['/admin/products']);
       },
-      error: (err) => {
+      error: (err: { error: { message: string; }; }) => {
+        console.error(err);
+        this.errorMessage = err?.error?.message || 'Failed to save product.';
         this.saving = false;
-        console.error('Failed to create product', err);
-        this.errorMessage =
-          'Failed to create product. Check console for details.';
-
-        // 🔥 ensure error message appears immediately
         this.cdr.detectChanges();
       },
     });

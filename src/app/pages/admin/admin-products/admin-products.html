@@ -1,6 +1,6 @@
 <div class="section-header">
   <div>
-    <h2>Liquor Inventory</h2>
+    <h2>Product & Catalog</h2>
     <p class="section-desc">
       Bulk import and view liquor inventory from Excel.
     </p>
@@ -8,10 +8,10 @@
 
   <div class="actions">
     <button class="btn-light" (click)="onBulkImport()">Bulk Import</button>
-  </div>
-      <button class="btn-primary" (click)="onAddNewProduct()">
+    <button class="btn-primary" (click)="onAddNewProduct()">
       + Add New Product
     </button>
+  </div>
 </div>
 
 <!-- Hidden File Input -->
@@ -31,42 +31,45 @@
 
 <div class="table-scroll">
   <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Brand</th>
-          <th>Strength (%)</th>
-          <th>Bottle Size (ml)</th>
-          <th>MRP</th>
-          <th>Cases</th>
-          <th>Total Bottles</th>
-          <th>Batch</th>
-          <th>Month</th>
-        </tr>
-      </thead>
+   <table>
+  <thead>
+    <tr>
+      <th class="sno num">Sr. No.</th>
+      <th class="brand">Brand</th>
+      <th class="num strength">Strength (%)</th>
+      <th class="num size">Bottle Size (ml)</th>
+      <th class="num mrp">MRP</th>
+      <th class="num cases">Cases</th>
+      <th class="num total">Total Bottles</th>
+      <th class="batch">Batch</th>
+      <th class="month">Month</th>
+    </tr>
+  </thead>
 
-      <tbody>
-        @if (liquorRows.length === 0) {
-          <tr>
-            <td colspan="8" class="empty-state">
-              No liquor inventory found. Import Excel to add data.
-            </td>
-          </tr>
-        } @else {
-          @for (row of liquorRows; track row.id) {
-            <tr>
-              <td>{{ row.brandName }}</td>
-              <td>{{ row.strengthVv }}</td>
-              <td>{{ row.bottleSizeMl }}</td>
-              <td>{{ row.mrpApproved }}</td>
-              <td>{{ row.noOfCases }}</td>
-              <td>{{ row.totalBottles }}</td>
-              <td>{{ row.batchNumber }}</td>
-              <td>{{ row.monthOfMfg }}</td>
-            </tr>
-          }
-        }
-      </tbody>
-    </table>
+  <tbody>
+    @if (liquorRows.length === 0) {
+      <tr>
+        <td colspan="9" class="empty-state">
+          No liquor inventory found. Import Excel to add data.
+        </td>
+      </tr>
+    } @else {
+      @for (row of liquorRows; track row.id; let i = $index) {
+        <tr>
+          <td class="num sno">{{ i + 1 }}</td>
+          <td class="brand">{{ row.brandName }}</td>
+          <td class="num strength">{{ row.strengthVv }}%</td>
+          <td class="num size">{{ row.bottleSizeMl }} ML</td>
+          <td class="num mrp">{{ row.mrpApproved }}</td>
+          <td class="num cases">{{ row.noOfCases }}</td>
+          <td class="num total">{{ row.totalBottles }}</td>
+          <td class="batch">{{ row.batchNumber }}</td>
+          <td class="month">{{ row.monthOfMfg }}</td>
+        </tr>
+      }
+    }
+  </tbody>
+</table>
+
   </div>
 </div>

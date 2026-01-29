@@ -80,27 +80,27 @@
   font-size: 0.8rem;
   white-space: nowrap;
 }
-
 /* ===============================
-   TABLE
+   TABLE (FIXED ALIGNMENT)
 ================================ */
 
 .table-scroll {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .table-wrapper {
-  overflow-x: hidden;
   background: #e4e5e9;
   border-radius: 0.85rem;
   border: 1px solid rgba(148,163,184,0.6);
   margin-top: 0.75rem;
+    overflow: hidden;   
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* 🔥 MOST IMPORTANT FIX */
   font-size: 0.82rem;
   min-width: 750px;
 }
@@ -109,8 +109,13 @@ th,
 td {
   padding: 0.6rem 0.75rem;
   border-bottom: 1px solid rgba(31,41,55,0.9);
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Header */
 thead {
   background: #151a3e;
 }
@@ -118,18 +123,48 @@ thead {
 th {
   color: whitesmoke;
   font-weight: 600;
+  text-align: left;
 }
 
+/* Numeric columns */
 th.num,
 td.num {
-  text-align: right;
+  text-align: center;
 }
+
+/* Column widths (header + body SAME) */
+.brand { width: 17%; }
+.strength { width: 9%; }
+.size { width: 11%; }
+.mrp { width: 7%; }
+.cases { width: 7%; }
+.total { width: 11%; }
+.batch { width: 11%; }
+.month { width: 11%; }
+
+
+/* Row colors */
+tbody tr {
+  background: #e5e7eb;
+}
+
+tbody tr:nth-child(even) {
+  background: #dfe1e6;
+}
+/* Serial Number */
+.sno {
+  width: 5%;
+  text-align: center;
+  font-weight: 600;
+}
+
 
 .empty-state {
   text-align: center;
-  color: #9ca3af;
+  color: #6b7280;
   padding: 1rem;
 }
+
 
 /* ===============================
    BUTTONS (INLINE)

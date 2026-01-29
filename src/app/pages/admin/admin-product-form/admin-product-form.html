@@ -1,75 +1,71 @@
-<!-- src/app/pages/admin/admin-product-form/admin-product-form.html -->
 <div class="page-wrapper">
   <div class="header-row">
-    <h2>Add Product</h2>
-    <button class="btn-secondary" (click)="goBack()">
-      ← Back to Products
-    </button>
+    <h2>🍺 Add Beer Stock</h2>
+    <button class="btn-secondary" (click)="goBack()">← Back</button>
   </div>
 
-  <!-- Mode Switch -->
+  <!-- MODE SWITCH -->
   <div class="mode-switch">
     <button
       class="mode-btn"
       [class.active]="mode === 'SCAN'"
       (click)="switchMode('SCAN')"
     >
-      Scan with Wireless Barcode Scanner
+      📷 Scan Barcode
     </button>
+
     <button
       class="mode-btn"
       [class.active]="mode === 'MANUAL'"
       (click)="switchMode('MANUAL')"
     >
-      Manual Product Entry
+      ✍️ Manual Entry
     </button>
   </div>
 
-  <!-- Messages -->
+  <!-- INFO / ERROR -->
   <div *ngIf="errorMessage" class="alert alert-error">
     {{ errorMessage }}
   </div>
+
   <div *ngIf="infoMessage" class="alert alert-info">
     {{ infoMessage }}
   </div>
 
-  <!-- SCAN MODE -->
+  <!-- SCAN MODE ONLY -->
   <div *ngIf="mode === 'SCAN'" class="card">
     <h3>Scan Barcode</h3>
     <p class="hint">
-      Focus the barcode box and scan using your wireless scanner.
-      Most scanners automatically send ENTER after scanning.
+      Focus here and scan using wireless scanner (ENTER auto submits)
     </p>
 
     <div class="field-row">
-      <label>Barcode</label>
       <input
         type="text"
-        [(ngModel)]="scanBarcode"
-        name="scanBarcode"
         placeholder="Scan or type barcode"
+        [(ngModel)]="scanBarcode"
         (keyup.enter)="onScanConfirm()"
         autofocus
       />
-      <button class="btn-primary" (click)="onScanConfirm()">
-        Use Barcode
-      </button>
+      <button class="btn-primary" (click)="onScanConfirm()">Use</button>
     </div>
   </div>
 
-  <!-- COMMON FORM -->
+  <!-- PRODUCT FORM (COMMON FOR BOTH MODES) -->
   <div class="card">
-    <h3>Product Details</h3>
+    <h3>Beer Details</h3>
 
-    <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <form (ngSubmit)="onSubmit()" #f="ngForm">
       <div class="form-grid">
+
         <div class="field">
-          <label>SKU Code *</label>
+          <label>Brand Name *</label>
           <input
             type="text"
-            [(ngModel)]="form.skuCode"
-            name="skuCode"
+            [(ngModel)]="form.brandName"
+            name="brandName"
             required
+            [autofocus]="mode === 'MANUAL'"
           />
         </div>
 
@@ -79,92 +75,54 @@
         </div>
 
         <div class="field">
-          <label>Name *</label>
-          <input
-            type="text"
-            [(ngModel)]="form.name"
-            name="name"
-            required
-          />
+          <label>Alcohol Strength (%)</label>
+          <input type="number" step="0.01" [(ngModel)]="form.strengthVv" name="strengthVv" />
         </div>
 
         <div class="field">
-          <label>Category</label>
-          <input
-            type="text"
-            [(ngModel)]="form.category"
-            name="category"
-          />
+          <label>Bottle Size (ml)</label>
+          <input type="number" [(ngModel)]="form.bottleSizeMl" name="bottleSizeMl" />
         </div>
 
         <div class="field">
-          <label>Unit of Measure</label>
-          <input
-            type="text"
-            [(ngModel)]="form.unitOfMeasure"
-            name="unitOfMeasure"
-            placeholder="bottle, box, pcs"
-          />
+          <label>MRP Approved (₹)</label>
+          <input type="number" [(ngModel)]="form.mrpApproved" name="mrpApproved" />
         </div>
 
         <div class="field">
-          <label>MRP</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            [(ngModel)]="form.mrp"
-            name="mrp"
-          />
+          <label>No. of Cases</label>
+          <input type="number" [(ngModel)]="form.noOfCases" name="noOfCases" />
         </div>
 
         <div class="field">
-          <label>Selling Price</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            [(ngModel)]="form.sellingPrice"
-            name="sellingPrice"
-          />
+          <label>Bottles per Case</label>
+          <input type="number" [(ngModel)]="form.noOfBottles" name="noOfBottles" />
         </div>
 
         <div class="field">
-          <label>Min Stock Level</label>
-          <input
-            type="number"
-            min="0"
-            [(ngModel)]="form.minStockLevel"
-            name="minStockLevel"
-          />
+          <label>Batch Number</label>
+          <input type="text" [(ngModel)]="form.batchNumber" name="batchNumber" />
         </div>
-        <div class="field">
-  <label>Current Stock *</label>
-  <input
-    type="number"
-    min="0"
-    [(ngModel)]="form.currentStock"
-    name="currentStock"
-    required
-  />
-</div>
 
         <div class="field">
-          <label>Status</label>
-          <select [(ngModel)]="form.active" name="active">
-            <option [ngValue]="true">ACTIVE</option>
-            <option [ngValue]="false">INACTIVE</option>
-          </select>
+          <label>Month of Manufacturing</label>
+          <input type="month" [(ngModel)]="form.monthOfMfg" name="monthOfMfg" />
         </div>
+
+        <div class="field readonly">
+          <label>Total Bottles</label>
+          <input type="number" [value]="totalBottles" readonly />
+        </div>
+
       </div>
 
       <div class="actions-row">
         <button
           class="btn-primary"
           type="submit"
-          [disabled]="saving || !productForm.form.valid"
+          [disabled]="!f.valid || saving"
         >
-          {{ saving ? 'Saving...' : 'Save Product' }}
+          {{ saving ? 'Saving...' : 'Save Stock' }}
         </button>
       </div>
     </form>
