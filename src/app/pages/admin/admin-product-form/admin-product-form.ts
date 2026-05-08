@@ -57,10 +57,7 @@ export class AdminProductForm {
     }
 
     this.form.barcode = code;
-      // 🔥 optional auto SKU
-    if (!this.form.skuCode) {
-      this.form.skuCode = 'SKU-' + code.slice(-6);
-    }
+
     this.infoMessage = 'Barcode captured successfully.';
     this.cdr.detectChanges();
   }

@@ -1,23 +1,19 @@
-// src/app/components/admin-stock/admin-stock.ts
-
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProductService, ProductDto } from '../../../services/product';
+import { StockService } from '../../../services/stock';
 
 interface StockRow {
-  product: ProductDto;      // keep full product
   id: number;
   code: string;
   name: string;
+
   currentStock: number;
-  minStock: number;
+  minStock: number; // always 25
 
-  // inline edit fields
+  // inline edit
   adjustedStock: number;
-  adjustedMinStock: number;
 
-  // UI flag: show "Saved" state
   saved: boolean;
 }
 
@@ -33,121 +29,84 @@ export class AdminStock implements OnInit {
   loading = false;
   adjustmentMode = false;
 
-  constructor(private productService: ProductService,  private cdr: ChangeDetectorRef,  private zone: NgZone) {}
+  readonly MIN_STOCK = 25;
+
+  constructor(
+    private stockService: StockService,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
+  ) {}
 
   ngOnInit(): void {
     this.loadStock();
   }
 
-  // 🔄 Load stock data from products table
+  // 🔄 Load stock from liquor_inventory
   loadStock(): void {
     this.loading = true;
-  this.cdr.detectChanges();
+    this.cdr.detectChanges();
 
-    this.productService.getAllForAdmin().subscribe({
-    next: (products: ProductDto[]) => {
-      this.zone.run(() => {   // 🔥 ensures Angular change detection runs
+    this.stockService.getStock().subscribe({
+      next: (data) => {
+        this.zone.run(() => {
+          this.rows = data.map((item: any) => ({
+            id: item.id,
+            code: item.code,
+            name: item.product,
+            currentStock: item.currentStock,
+            minStock: this.MIN_STOCK,
+            adjustedStock: item.currentStock,
+            saved: false,
+          }));
 
-        this.rows = products.map(p => ({
-          product: p,
-          id: p.id,
-          code: p.skuCode,
-          name: p.name,
-          currentStock: p.currentStock ?? 0,
-          minStock: p.minStockLevel ?? 0,
-          adjustedStock: p.currentStock ?? 0,
-          adjustedMinStock: p.minStockLevel ?? 0,
-          saved: false,
-        }));
-
-        this.loading = false;
-        this.cdr.detectChanges();  // 🔥 instantly updates table
-      });
-    },
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      },
       error: (err) => {
-        console.error('Failed to load stock data', err);
+        console.error('Failed to load stock', err);
         this.loading = false;
-           this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       },
     });
   }
 
-  // 👉 Stock In later (no navigation now)
   onStockInClick(): void {
     alert('Stock In (Purchase) will be implemented later.');
   }
 
-  // 👉 Toggle inline adjustment mode
   onStockAdjustmentClick(): void {
     this.adjustmentMode = !this.adjustmentMode;
 
-    if (this.adjustmentMode) {
-      // reset adjusted values from current values & clear saved state
-      this.rows.forEach((r) => {
-        r.adjustedStock = r.currentStock;
-        r.adjustedMinStock = r.minStock;
-        r.saved = false;
-      });
-    } else {
-      // when leaving adjustment mode, clear saved flags
-      this.rows.forEach((r) => (r.saved = false));
-    }
+    this.rows.forEach((r) => {
+      r.adjustedStock = r.currentStock;
+      r.saved = false;
+    });
   }
 
-  // 👉 Save adjustment for a single row using PATCH /api/products/{id}/stock
+  // ✅ Save audit adjustment
   saveAdjustment(row: StockRow): void {
-    const newCurrentStock = Number(row.adjustedStock);
-    const newMinStock = Number(row.adjustedMinStock);
+    const newStock = Number(row.adjustedStock);
 
-    // If nothing changed, don't call backend
-    if (
-      newCurrentStock === row.currentStock &&
-      newMinStock === row.minStock
-    ) {
-      return;
-    }
+    if (newStock === row.currentStock) return;
 
-    const payload = {
-      currentStock: newCurrentStock,
-      minStockLevel: newMinStock,
-    };
-
-    console.log('Sending stock update payload:', payload);
-
-    this.productService.updateStock(row.id, payload).subscribe({
-      next: (updated) => {
-        console.log('Stock updated for product:', updated);
-
-        // sync row + product with backend response
-        row.product = updated;
-        row.currentStock = updated.currentStock ?? newCurrentStock;
-        row.minStock = updated.minStockLevel ?? newMinStock;
-
-        row.adjustedStock = row.currentStock;
-        row.adjustedMinStock = row.minStock;
-
-        // show "Saved" state
+    this.stockService.adjustStock(row.id, newStock).subscribe({
+      next: () => {
+        row.currentStock = newStock;
+        row.adjustedStock = newStock;
         row.saved = true;
 
-        // optional: auto clear "Saved" after 3 seconds
-        setTimeout(() => {
-          row.saved = false;
-        }, 3000);
+        setTimeout(() => (row.saved = false), 3000);
       },
       error: (err) => {
-        console.error(
-          'Failed to update stock',
-          err?.error || err?.message || err
-        );
-        alert('Failed to update stock. Please check backend logs.');
+        console.error('Stock update failed', err);
+        alert('Failed to update stock');
       },
     });
   }
 
-  // 👉 Reset just this row (back to current values)
   cancelAdjustment(row: StockRow): void {
     row.adjustedStock = row.currentStock;
-    row.adjustedMinStock = row.minStock;
     row.saved = false;
   }
 }
