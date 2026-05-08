@@ -1,128 +1,77 @@
 <div class="section-header">
   <div>
-    <h2>Products & Catalog</h2>
+    <h2>Product & Catalog</h2>
     <p class="section-desc">
-      Add, edit and bulk import products with barcode, price and category.
+      Bulk import and view liquor inventory from Excel.
     </p>
   </div>
 
   <div class="actions">
     <button class="btn-light" (click)="onBulkImport()">Bulk Import</button>
-    <button class="btn-primary" (click)="onAddProduct()">+ Add Product</button>
+    <button class="btn-primary" (click)="onAddNewProduct()">
+      + Add New Product
+    </button>
   </div>
 </div>
 
-<div class="filters-row">
-  <div class="filter">
-    <label>Search</label>
-    <input type="text" [(ngModel)]="searchText" placeholder="Code / name / category" />
-  </div>
+<!-- Hidden File Input -->
+<input
+  type="file"
+  #fileInput
+  accept=".xlsx"
+  hidden
+  (change)="onFileSelected($event)"
+/>
 
+<div class="filters-row">
   <div class="info-chip">
-    Products in list: <strong>{{ filteredRows.length }}</strong>
+    Total Records: <strong>{{ liquorRows.length }}</strong>
   </div>
 </div>
 
 <div class="table-scroll">
   <div class="table-wrapper">
-    <table>
-      <thead>
+   <table>
+  <thead>
+    <tr>
+      <th class="sno num">Sr. No.</th>
+      <th class="num sku-code">SKU Code</th>
+      <th class="brand">Brand</th>
+      <th class="num strength">Strength (%)</th>
+      <th class="num size">Bottle Size (ml)</th>
+      <th class="num mrp">MRP</th>
+      <th class="num cases">Cases</th>
+      <th class="num total">Total Bottles</th>
+      <th class="batch">Batch</th>
+      <th class="month">Month</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    @if (liquorRows.length === 0) {
+      <tr>
+        <td colspan="10" class="empty-state">
+          No liquor inventory found. Import Excel to add data.
+        </td>
+      </tr>
+    } @else {
+      @for (row of liquorRows; track row.id; let i = $index) {
         <tr>
-          <th>Code</th>
-          <th>Product</th>
-          <th>Category</th>
-          <th class="num">MRP</th>
-          <th class="num">Selling</th>
-          <th>Status</th>
-          <th class="num">Actions</th>
+          <td class="num sno">{{ i + 1 }}</td>
+          <td class="num sku-code">{{ row.skuCode }}</td>
+          <td class="brand">{{ row.brandName }}</td>
+          <td class="num strength">{{ row.strengthVv }}%</td>
+          <td class="num size">{{ row.bottleSizeMl }} ML</td>
+          <td class="num mrp">{{ row.mrpApproved }}</td>
+          <td class="num cases">{{ row.noOfCases }}</td>
+          <td class="num total">{{ row.totalBottles }}</td>
+          <td class="batch">{{ row.batchNumber }}</td>
+          <td class="month">{{ row.monthOfMfg }}</td>
         </tr>
-      </thead>
+      }
+    }
+  </tbody>
+</table>
 
-      <tbody>
-        @if (filteredRows.length === 0) {
-        <tr>
-          <td colspan="7" class="empty-state">
-            No products found. Use "Add Product" to create new items.
-          </td>
-        </tr>
-        } @else {
-
-        @for (row of filteredRows; track row.id) {
-        <tr [class.editing]="editingRowId === row.id">
-
-          <!-- CODE -->
-          <td data-label="Code">
-            @if (editingRowId === row.id && editModel) {
-            <input type="text" [(ngModel)]="editModel.skuCode" />
-            } @else {
-            {{ row.skuCode }}
-            }
-          </td>
-
-
-          <!-- PRODUCT NAME -->
-          <td data-label="Product">
-            @if (editingRowId === row.id && editModel) {
-            <input type="text" [(ngModel)]="editModel.name" />
-            } @else {
-            {{ row.name }}
-            }
-          </td>
-
-
-          <!-- CATEGORY -->
-          <td data-label="Category">
-            @if (editingRowId === row.id && editModel) {
-            <input type="text" [(ngModel)]="editModel.category" />
-            } @else {
-            {{ row.category }}
-            }
-          </td>
-
-
-          <!-- MRP -->
-          <td data-label="MRP" class="num">
-            @if (editingRowId === row.id && editModel) {
-            <input type="number" [(ngModel)]="editModel.mrp" />
-            } @else {
-            {{ row.mrp | number : '1.0-2' }}
-            }
-          </td>
-
-
-          <td data-label="Selling" class="num">
-            @if (editingRowId === row.id && editModel) {
-            <input type="number" [(ngModel)]="editModel.sellingPrice" />
-            } @else {
-            {{ row.sellingPrice | number : '1.0-2' }}
-            }
-          </td>
-
-
-          <!-- STATUS -->
-          <td data-label="Status">
-            <span class="status-pill" [class.active]="row.active" [class.inactive]="!row.active">
-              {{ row.active ? 'ACTIVE' : 'INACTIVE' }}
-            </span>
-          </td>
-
-          <!-- ACTIONS -->
-          <td class="num">
-            @if (editingRowId === row.id) {
-            <button class="save-btn" (click)="onSaveEdit()">Save</button>
-            <button class="cancel-btn" (click)="onCancelEdit()">Cancel</button>
-            } @else {
-            <button class="link-btn" (click)="onEdit(row)">Edit</button>
-            <button class="link-btn" (click)="onToggleStatus(row)">
-              {{ row.active ? 'Deactivate' : 'Activate' }}
-            </button>
-            }
-          </td>
-
-        </tr>
-        }
-        }
-      </tbody>
-    </table>
   </div>
 </div>

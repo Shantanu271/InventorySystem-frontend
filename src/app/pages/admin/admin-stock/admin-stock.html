@@ -11,6 +11,7 @@
     <button class="btn-light" (click)="onStockInClick()">
       Stock In (Purchase)
     </button>
+
     <button
       class="btn-light"
       [class.active]="adjustmentMode"
@@ -27,6 +28,7 @@
       <tr>
         <th>Code</th>
         <th>Product</th>
+
         <th class="num">
           @if (adjustmentMode) {
             New Stock
@@ -34,14 +36,10 @@
             Current Stock
           }
         </th>
-        <th class="num">
-          @if (adjustmentMode) {
-            New Min. Stock
-          } @else {
-            Min. Stock
-          }
-        </th>
+
+        <th class="num">Min. Stock</th>
         <th>Status</th>
+
         @if (adjustmentMode) {
           <th class="num">Actions</th>
         }
@@ -60,7 +58,10 @@
       } @else {
         @for (row of rows; track row.id) {
           <tr>
+            <!-- Code -->
             <td>{{ row.code }}</td>
+
+            <!-- Product Name -->
             <td>{{ row.name }}</td>
 
             <!-- Current / Adjusted Stock -->
@@ -68,58 +69,48 @@
               @if (adjustmentMode) {
                 <input
                   type="number"
+                  class="stock-input"
                   [(ngModel)]="row.adjustedStock"
                   [ngModelOptions]="{ standalone: true }"
-                  class="stock-input"
                 />
               } @else {
                 {{ row.currentStock }}
               }
             </td>
 
-            <!-- Current / Adjusted Min Stock -->
-            <td class="num">
-              @if (adjustmentMode) {
-                <input
-                  type="number"
-                  [(ngModel)]="row.adjustedMinStock"
-                  [ngModelOptions]="{ standalone: true }"
-                  class="stock-input"
-                />
-              } @else {
-                {{ row.minStock }}
-              }
-            </td>
+            <!-- Min Stock (Fixed = 25) -->
+            <td class="num">25</td>
 
-            <!-- Status based on current stock vs min stock -->
+            <!-- Status -->
             <td>
               <span
                 class="status-pill"
-                [class.low]="row.currentStock < row.minStock"
+                [class.low]="row.currentStock <= 25"
               >
-                {{
-                  row.currentStock < row.minStock ? 'LOW STOCK' : 'OK'
-                }}
+                {{ row.currentStock <= 25 ? 'LOW STOCK' : 'OK' }}
               </span>
             </td>
 
-            <!-- Actions only in adjustment mode -->
+            <!-- Actions (Only in Adjustment Mode) -->
             @if (adjustmentMode) {
               <td class="num">
                 @if (row.saved) {
-                  <!-- AFTER SAVE -->
                   <button class="link-btn saved-btn" disabled>
                     ✓ Saved
                   </button>
                 } @else {
-                  <!-- BEFORE SAVE -->
-                  <button class="link-btn" (click)="saveAdjustment(row)">
+                  <button
+                    class="link-btn"
+                    (click)="saveAdjustment(row)"
+                  >
                     Save
                   </button>
                 }
 
-                <!-- RESET button (always visible) -->
-                <button class="link-btn" (click)="cancelAdjustment(row)">
+                <button
+                  class="link-btn"
+                  (click)="cancelAdjustment(row)"
+                >
                   Reset
                 </button>
               </td>
@@ -132,7 +123,9 @@
 </div>
 
 <p class="hint">
-  Stock levels are loaded from the products table (<code>current_stock</code>
-  and <code>min_stock_level</code>). In <strong>Stock Adjustment / Audit</strong>
-  mode, you can edit both current stock and minimum stock and save per product.
+  Stock levels are loaded from the
+  <code>liquor_inventory</code> table. Minimum stock is fixed at
+  <strong>25 bottles</strong>. In
+  <strong>Stock Adjustment / Audit</strong> mode, you can update the
+  current stock value per product.
 </p>

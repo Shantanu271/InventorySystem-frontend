@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+<<<<<<< HEAD
 export const routes: Routes = [
 
 
@@ -199,3 +200,6 @@ export const routes: Routes = [
   // ===================================
   { path: '**', redirectTo: 'login' }
 ];
+=======
+export const routes: Routes = [];
+>>>>>>> parent of 0f9a20f (frontend Added)
